@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图片转换 — VideoFrame</title>
+  <script>
+    // 主题引导：在 CSS 绘制前应用，避免闪烁
+    (function () {
+      try {
+        var t = localStorage.getItem('vf-theme') || 'dark';
+        if (t === 'glass') document.documentElement.classList.add('theme-glass');
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/ui-addons.css">
+  <link rel="stylesheet" href="assets/theme-glass.css">
+  <link rel="stylesheet" href="assets/convert.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="logo">🖼️</span>
+      <div>
+        <h1>图片转换</h1>
+        <p class="tagline">JPG / PNG / WebP / RAW 格式互转</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <nav class="app-nav">
+        <a href="VideoFrame.html" class="nav-link">视频帧处理</a>
+        <a href="convert.html" class="nav-link active">图片转换</a>
+      </nav>
+      <select id="themeSelect" class="theme-select" title="切换主题">
+        <option value="dark">深色主题</option>
+        <option value="glass">液态玻璃</option>
+      </select>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div id="convertDropZone" class="drop-zone">
+        <input type="file" id="convertFileInput"
+               accept="image/*,.raw,.bin,.jpg,.jpeg,.png,.webp,.gif,.bmp" multiple hidden>
+        <div id="convertDropHint" class="drop-hint">
+          <div class="big-icon">🖼️</div>
+          <p>拖入图片（JPG / PNG / WebP / GIF / BMP / RAW）</p>
+          <p class="sub">或 <button id="convertBrowseBtn" class="link-btn">点击选择文件</button>（可多选）</p>
+        </div>
+      </div>
+
+      <div id="rawSettings" class="settings hidden">
+        <div class="setting">
+          <label for="rawWidth">RAW 宽度 (px)</label>
+          <input type="number" id="rawWidth" min="1" max="16384" placeholder="如 1920">
+        </div>
+        <div class="setting">
+          <label for="rawHeight">RAW 高度 (px)</label>
+          <input type="number" id="rawHeight" min="1" max="16384" placeholder="如 1080">
+        </div>
+        <div class="setting">
+          <label for="rawLayout">RAW 通道布局</label>
+          <select id="rawLayout">
+            <option value="rgba">RGBA</option>
+            <option value="bgra">BGRA</option>
+            <option value="rgb">RGB</option>
+            <option value="bgr">BGR</option>
+            <option value="gray">灰度 GRAY</option>
+          </select>
+        </div>
+        <div class="setting estimate"><span>RAW 导入需填写宽高与通道布局</span></div>
+      </div>
+
+      <div class="settings">
+        <div class="setting">
+          <label for="convertFormat">输出格式</label>
+          <select id="convertFormat">
+            <option value="jpeg">JPEG (.jpg)</option>
+            <option value="png">PNG</option>
+            <option value="webp">WebP</option>
+            <option value="raw">RAW（原始像素）</option>
+          </select>
+        </div>
+        <div class="setting" id="qualitySetting">
+          <label for="convertQuality">质量 <span id="qualityValue" class="muted">90</span>%</label>
+          <input type="range" id="convertQuality" min="1" max="100" value="90">
+        </div>
+        <div class="setting" id="jpegBgSetting">
+          <label for="jpegBg">JPEG 背景</label>
+          <select id="jpegBg">
+            <option value="white" selected>白色</option>
+            <option value="black">黑色</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="convert-actions">
+        <button id="convertBtn" class="primary-btn">⬇ 转换并下载</button>
+        <button id="convertClearBtn" class="ghost-btn">清空</button>
+      </div>
+
+      <div id="convertProgress" class="progress hidden">
+        <div class="bar"><div class="fill"></div></div>
+        <div class="text"></div>
+      </div>
+
+      <div class="convert-section">
+        <div class="filmstrip-head">
+          <span>已添加的文件</span>
+          <span id="convertFileCount" class="muted">0 个</span>
+        </div>
+        <div id="convertGrid" class="convert-grid"></div>
+        <p id="convertEmpty" class="empty-hint">尚未添加文件</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    图片转换 · 纯前端本地处理，文件不上传
+  </footer>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/zip.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/convert.js"></script>
+</body>
+</html>

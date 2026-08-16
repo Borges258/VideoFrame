@@ -1,0 +1,128 @@
+/*
+ * VideoFrame - theme-glass.css
+ * 「晶莹感液态玻璃」主题。
+ * 通过 html.theme-glass 覆盖基础主题的 CSS 变量，并叠加磨砂玻璃效果。
+ * 不修改 assets/style.css，仅在需要时覆盖。
+ */
+
+/* ---------- 覆盖基础变量为半透明玻璃质感 ---------- */
+html.theme-glass {
+  --bg: #0b0e1c;
+  --bg-soft: rgba(255, 255, 255, 0.055);
+  --panel: rgba(255, 255, 255, 0.075);
+  --panel-2: rgba(255, 255, 255, 0.12);
+  --border: rgba(255, 255, 255, 0.16);
+  --text: #eef2ff;
+  --muted: #a7b4cf;
+  --accent: #6aa5ff;
+  --accent-2: #b58cff;
+  --danger: #ff6b7a;
+  --shadow: 0 16px 40px rgba(16, 26, 70, 0.45);
+}
+
+/* ---------- 晶莹渐变背景 ---------- */
+html.theme-glass body {
+  background:
+    radial-gradient(1100px 720px at 8% -8%, rgba(96, 146, 255, 0.28), transparent 55%),
+    radial-gradient(950px 680px at 108% 0%, rgba(181, 140, 255, 0.24), transparent 55%),
+    radial-gradient(900px 680px at 88% 112%, rgba(55, 211, 155, 0.18), transparent 55%),
+    radial-gradient(900px 660px at -6% 112%, rgba(255, 120, 190, 0.17), transparent 55%),
+    #0b0e1c;
+  background-attachment: fixed;
+  color: var(--text);
+}
+
+/* 缓慢漂移的光斑，营造晶莹流动感 */
+html.theme-glass body::before {
+  content: '';
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 38% at 20% 20%, rgba(120, 165, 255, 0.20), transparent 60%),
+    radial-gradient(32% 32% at 80% 28%, rgba(190, 150, 255, 0.17), transparent 60%),
+    radial-gradient(34% 34% at 62% 82%, rgba(90, 220, 180, 0.15), transparent 60%);
+  filter: blur(58px);
+  animation: vf-glass-drift 24s ease-in-out infinite alternate;
+}
+@keyframes vf-glass-drift {
+  0%   { transform: translate3d(-2%, -1%, 0) scale(1); }
+  50%  { transform: translate3d(2%, 2%, 0) scale(1.06); }
+  100% { transform: translate3d(-1%, 1%, 0) scale(1.02); }
+}
+
+/* ---------- 玻璃面板：磨砂 + 高光边 + 柔和投影 ---------- */
+html.theme-glass .app-header,
+html.theme-glass .steps,
+html.theme-glass .drop-zone,
+html.theme-glass .settings,
+html.theme-glass .progress,
+html.theme-glass .editor-main,
+html.theme-glass .side-card,
+html.theme-glass .filmstrip,
+html.theme-glass .export-card,
+html.theme-glass .convert-item {
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.05),
+    0 12px 32px rgba(16, 26, 70, 0.35);
+}
+
+html.theme-glass .app-header {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.04));
+}
+html.theme-glass .steps { background: rgba(255, 255, 255, 0.06); }
+
+html.theme-glass .toolbar,
+html.theme-glass .statusbar {
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ---------- 控件玻璃化 ---------- */
+html.theme-glass button.tool-btn,
+html.theme-glass button.icon-btn,
+html.theme-glass button.ghost-btn,
+html.theme-glass .file-chip,
+html.theme-glass .thumb,
+html.theme-glass input[type="number"],
+html.theme-glass select,
+html.theme-glass .theme-select {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+html.theme-glass button.tool-btn:hover:not(:disabled),
+html.theme-glass button.icon-btn:hover:not(:disabled),
+html.theme-glass button.ghost-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: var(--accent);
+}
+html.theme-glass input[type="color"] { background: rgba(255, 255, 255, 0.12); }
+
+/* ---------- 主按钮发光 ---------- */
+html.theme-glass .primary-btn {
+  background: linear-gradient(120deg, var(--accent), var(--accent-2));
+  box-shadow:
+    0 6px 20px rgba(110, 140, 255, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+/* ---------- 画布区：半透明棋盘格 ---------- */
+html.theme-glass .canvas-wrap {
+  background:
+    repeating-conic-gradient(rgba(255, 255, 255, 0.075) 0% 25%, rgba(255, 255, 255, 0.028) 0% 50%) 0 0 / 20px 20px;
+}
+
+/* ---------- 选中高亮与拖拽态 ---------- */
+html.theme-glass .drop-zone.dragging {
+  background: rgba(120, 165, 255, 0.14);
+  border-color: var(--accent);
+}
+html.theme-glass .thumb.selected {
+  box-shadow: 0 0 0 2px rgba(140, 170, 255, 0.45);
+}

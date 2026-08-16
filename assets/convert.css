@@ -1,0 +1,74 @@
+/*
+ * VideoFrame - convert.css
+ * 图片转换页专属样式（独立于 style.css，与主应用解耦）。
+ */
+.convert-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.convert-section { margin-top: 24px; }
+.convert-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.convert-item {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.12s;
+}
+.convert-item:hover { transform: translateY(-2px); }
+.convert-thumb {
+  height: 110px;
+  background: var(--panel-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.convert-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.convert-thumb.raw {
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 2px;
+  font-size: 14px;
+}
+.convert-item-info { padding: 8px 10px; }
+.convert-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.convert-item-meta { font-size: 12px; color: var(--muted); }
+.convert-item-del {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.convert-item-del:hover { background: rgba(255, 80, 80, 0.9); }
+
+input[type="range"] {
+  accent-color: var(--accent);
+  min-width: 160px;
+}
+.setting .range-label { font-size: 12px; color: var(--muted); }

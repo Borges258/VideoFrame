@@ -4,7 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VideoFrame — MP4 视频帧处理器</title>
+  <script>
+    // 主题引导：在 CSS 绘制前应用，避免闪烁
+    (function () {
+      try {
+        var t = localStorage.getItem('vf-theme') || 'dark';
+        if (t === 'glass') document.documentElement.classList.add('theme-glass');
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/ui-addons.css">
+  <link rel="stylesheet" href="assets/theme-glass.css">
 </head>
 <body>
   <header class="app-header">
@@ -15,7 +26,17 @@
         <p class="tagline">MP4 视频 → PNG 帧 → 编辑像素 → ZIP / GIF 输出</p>
       </div>
     </div>
-    <button id="resetAllBtn" class="ghost-btn" title="清空并重新开始">↺ 重新开始</button>
+    <div class="header-actions">
+      <nav class="app-nav">
+        <a href="VideoFrame.html" class="nav-link active">视频帧处理</a>
+        <a href="convert.html" class="nav-link">图片转换</a>
+      </nav>
+      <select id="themeSelect" class="theme-select" title="切换主题">
+        <option value="dark">深色主题</option>
+        <option value="glass">液态玻璃</option>
+      </select>
+      <button id="resetAllBtn" class="ghost-btn" title="清空并重新开始">↺ 重新开始</button>
+    </div>
   </header>
 
   <nav class="steps">
@@ -230,6 +251,7 @@
   <script src="js/editor.js"></script>
   <script src="js/zip.js"></script>
   <script src="js/gif.js"></script>
+  <script src="js/theme.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

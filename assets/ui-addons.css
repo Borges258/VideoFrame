@@ -1,0 +1,46 @@
+/*
+ * VideoFrame - ui-addons.css
+ * 新增的共享 UI 组件样式（顶部导航、主题选择器）。
+ * 独立于 style.css，供 VideoFrame.html 与 convert.html 共用。
+ */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.app-nav {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+.nav-link {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.nav-link:hover { color: var(--text); }
+.nav-link.active {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(91, 140, 255, 0.35);
+}
+.theme-select {
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.theme-select:focus { outline: 1px solid var(--accent); }
