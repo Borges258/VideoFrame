@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VideoFrame — MP4 视频帧处理器</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="logo">🎞️</span>
+      <div>
+        <h1>VideoFrame</h1>
+        <p class="tagline">MP4 视频 → PNG 帧 → 编辑像素 → ZIP / GIF 输出</p>
+      </div>
+    </div>
+    <button id="resetAllBtn" class="ghost-btn" title="清空并重新开始">↺ 重新开始</button>
+  </header>
+
+  <nav class="steps">
+    <div class="step active enabled" data-step="1"><span class="num">1</span>上传 & 提取</div>
+    <div class="sep"></div>
+    <div class="step" data-step="2"><span class="num">2</span>编辑帧</div>
+    <div class="sep"></div>
+    <div class="step" data-step="3"><span class="num">3</span>导出</div>
+  </nav>
+
+  <main>
+    <!-- ============ 步骤 1：上传与提取 ============ -->
+    <section id="step1" class="panel">
+      <div id="dropZone" class="drop-zone">
+        <input type="file" id="fileInput" accept="video/*,.mp4,.m4v,.mov,.webm,.mkv" hidden>
+        <div id="dropHint" class="drop-hint">
+          <div class="big-icon">🎬</div>
+          <p>将 MP4 视频拖拽到此处</p>
+          <p class="sub">或 <button id="browseBtn" class="link-btn">点击选择文件</button></p>
+        </div>
+        <div id="videoInfo" class="video-info hidden">
+          <div class="file-chip">📄 <span id="videoName"></span></div>
+          <div id="videoMeta" class="video-meta"></div>
+        </div>
+      </div>
+
+      <div id="extractSettings" class="settings hidden">
+        <div class="setting">
+          <label for="fpsInput">每秒帧数 (FPS)</label>
+          <input type="number" id="fpsInput" min="1" max="60" value="10">
+        </div>
+        <div class="setting">
+          <label for="scaleSelect">最长边像素</label>
+          <select id="scaleSelect">
+            <option value="0">原始尺寸</option>
+            <option value="1920">1920 px</option>
+            <option value="1280">1280 px</option>
+            <option value="960">960 px</option>
+            <option value="720" selected>720 px（推荐）</option>
+            <option value="480">480 px</option>
+            <option value="320">320 px</option>
+          </select>
+        </div>
+        <div class="setting">
+          <label for="maxFramesInput">最大帧数</label>
+          <input type="number" id="maxFramesInput" min="1" max="1000" value="200">
+        </div>
+        <div class="setting estimate">
+          <span id="frameCountEstimate"></span>
+        </div>
+        <button id="extractBtn" class="primary-btn">🎬 提取帧</button>
+      </div>
+
+      <div id="extractProgress" class="progress hidden">
+        <div class="bar"><div class="fill"></div></div>
+        <div class="text"></div>
+      </div>
+    </section>
+
+    <!-- ============ 步骤 2：编辑 ============ -->
+    <section id="step2" class="panel hidden">
+      <div class="editor-layout">
+        <div class="editor-main">
+          <div class="toolbar">
+            <div class="tool-group">
+              <button id="toolBrush" class="tool-btn active" title="画笔：添加像素 (B)">🖌️ 画笔</button>
+              <button id="toolEraser" class="tool-btn" title="橡皮：删除像素 (E)">🧽 橡皮</button>
+              <button id="toolPicker" class="tool-btn" title="取色器 (I)">💧 取色</button>
+            </div>
+            <div class="tool-group">
+              <label class="inline-label">颜色</label>
+              <input type="color" id="colorInput" value="#ff0000">
+              <label class="inline-label">笔刷</label>
+              <select id="brushSize">
+                <option value="1" selected>1px</option>
+                <option value="2">2px</option>
+                <option value="3">3px</option>
+                <option value="4">4px</option>
+                <option value="6">6px</option>
+                <option value="8">8px</option>
+                <option value="12">12px</option>
+                <option value="16">16px</option>
+              </select>
+            </div>
+            <div class="tool-group">
+              <button id="undoBtn" class="icon-btn" title="撤销 (Ctrl+Z)">↶</button>
+              <button id="redoBtn" class="icon-btn" title="重做 (Ctrl+Y)">↷</button>
+              <button id="resetBtn" class="icon-btn" title="重置本帧">⟲</button>
+            </div>
+            <div class="tool-group zoom-group">
+              <button id="zoomOut" class="icon-btn">−</button>
+              <button id="zoomFit" class="icon-btn" title="适应窗口">适应</button>
+              <button id="zoomIn" class="icon-btn">＋</button>
+              <span id="zoomLabel" class="zoom-label">适应</span>
+            </div>
+          </div>
+
+          <div id="canvasWrap" class="canvas-wrap">
+            <canvas id="editorCanvas"></canvas>
+          </div>
+
+          <div class="statusbar">
+            <span id="statusBar">将鼠标移到画布上查看像素</span>
+            <span id="frameInfo" class="frame-info"></span>
+          </div>
+        </div>
+
+        <aside class="editor-side">
+          <div class="side-card">
+            <h3>画布尺寸调整</h3>
+            <div class="resize-row">
+              <input type="number" id="resizeW" min="1" max="4000" placeholder="宽">
+              <span class="x">×</span>
+              <input type="number" id="resizeH" min="1" max="4000" placeholder="高">
+            </div>
+            <label class="inline-label">对齐</label>
+            <select id="anchorSelect">
+              <option value="tl">↖ 左上</option>
+              <option value="tc">↑ 顶部居中</option>
+              <option value="tr">↗ 右上</option>
+              <option value="cl">← 左侧居中</option>
+              <option value="cc" selected>◎ 居中</option>
+              <option value="cr">→ 右侧居中</option>
+              <option value="bl">↙ 左下</option>
+              <option value="bc">↓ 底部居中</option>
+              <option value="br">↘ 右下</option>
+            </select>
+            <button id="applyResizeBtn" class="primary-btn block">应用尺寸</button>
+            <p class="hint">缩小会裁切、放大会以透明填充。</p>
+          </div>
+
+          <div class="side-card">
+            <h3>帧操作</h3>
+            <button id="duplicateBtn" class="ghost-btn block">⧉ 复制当前帧</button>
+            <button id="deleteBtn" class="danger-btn block">🗑 删除当前帧</button>
+          </div>
+
+          <div class="side-card">
+            <h3>说明</h3>
+            <ul class="tips">
+              <li>画笔 = 添加像素；橡皮 = 删除像素（变透明）。</li>
+              <li>放大后出现像素网格，便于精修。</li>
+              <li>方向键 ←/→ 切换帧。</li>
+              <li>修改会自动保存到对应 PNG 帧。</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+
+      <div class="filmstrip-wrap">
+        <div class="filmstrip-head">
+          <span>帧序列</span>
+          <span id="framesCount" class="muted">0 帧</span>
+        </div>
+        <div id="filmstrip" class="filmstrip"></div>
+        <p id="filmstripEmpty" class="empty-hint">尚未提取帧</p>
+      </div>
+    </section>
+
+    <!-- ============ 步骤 3：导出 ============ -->
+    <section id="step3" class="panel hidden">
+      <div class="export-grid">
+        <div class="export-card">
+          <div class="export-icon">🗜️</div>
+          <h3>导出为 ZIP</h3>
+          <p class="muted">将 <span id="zipFrameCount">0 张 PNG</span> 打包压缩为 ZIP 文件（保留透明与原始尺寸）。</p>
+          <button id="exportZipBtn" class="primary-btn block">下载 ZIP</button>
+        </div>
+
+        <div class="export-card">
+          <div class="export-icon">🖼️</div>
+          <h3>导出为 GIF</h3>
+          <p class="muted">将 <span id="gifFrameCount">0 帧</span> 合成为动画 GIF。</p>
+          <div class="setting">
+            <label for="gifDelay">帧延迟 (ms)</label>
+            <input type="number" id="gifDelay" min="10" max="10000" value="100">
+          </div>
+          <div class="setting">
+            <label for="gifLoop">循环</label>
+            <select id="gifLoop">
+              <option value="0" selected>无限循环</option>
+              <option value="1">播放一次</option>
+            </select>
+          </div>
+          <div class="setting">
+            <label for="gifBg">背景</label>
+            <select id="gifBg">
+              <option value="transparent" selected>透明</option>
+              <option value="white">白色</option>
+              <option value="black">黑色</option>
+            </select>
+          </div>
+          <button id="exportGifBtn" class="primary-btn block">下载 GIF</button>
+        </div>
+      </div>
+
+      <div id="exportProgress" class="progress hidden">
+        <div class="bar"><div class="fill"></div></div>
+        <div class="text"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    VideoFrame · 纯前端实现（视频解码、像素编辑、ZIP 打包、GIF 编码均在浏览器本地完成，文件不上传）
+  </footer>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/extractor.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/zip.js"></script>
+  <script src="js/gif.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
