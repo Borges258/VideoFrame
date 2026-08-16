@@ -43,20 +43,6 @@
 
 本项目为纯静态站点，**零构建、零依赖**，任选其一：
 
-### 方式一：直接打开（最简单）
-
-直接用浏览器打开 `VideoFrame.html` 或 `convert.html` 即可（建议 Chrome / Edge 等现代浏览器）。
-
-### 方式二：本地静态服务器（可选）
-
-```bash
-# Python
-python -m http.server 8000
-# 然后访问 http://localhost:8000/VideoFrame.html
-
-# 或 Node
-npx serve .
-```
 
 ## 浏览器要求
 
