@@ -1,5 +1,7 @@
 /*
- * RAW 转换往返测试：验证 RGBA/BGRA/RGB/BGR/GRAY 通道布局的导入/导出对称性。
+ * 图片转换相关测试：
+ *  1) RAW 通道布局的导入/导出对称性
+ *  2) 画幅比例的纯计算逻辑
  * 运行：node test/convert_test.js
  */
 'use strict';
@@ -15,6 +17,7 @@ if (typeof globalThis.ImageData === 'undefined') {
 }
 
 require('../js/utils.js');
+require('../js/imgtools.js');
 require('../js/convert.js');
 const VF = globalThis.VF;
 
@@ -67,5 +70,29 @@ for (const layout of ['rgba', 'bgra', 'rgb', 'bgr']) {
   check(threw, '数据不足时抛错');
 }
 
-console.log(`RAW convert test: ${failures === 0 ? 'PASS' : 'FAIL'} (failures=${failures})`);
+/* ---------- 画幅比例计算 ---------- */
+{
+  const ca = VF.ImgTools.computeAspect;
+  const eq = (name, got, expW, expH) =>
+    check(got.width === expW && got.height === expH,
+      `${name}: ${got.width}x${got.height} 应为 ${expW}x${expH}`);
+
+  eq('100x100 1:1 fit', ca(100, 100, 1, 1, 'fit'), 100, 100);
+  eq('200x100 1:1 fit', ca(200, 100, 1, 1, 'fit'), 200, 200);
+  eq('200x100 1:1 fill', ca(200, 100, 1, 1, 'fill'), 100, 100);
+  eq('100x200 1:1 fit', ca(100, 200, 1, 1, 'fit'), 200, 200);
+  eq('100x200 1:1 fill', ca(100, 200, 1, 1, 'fill'), 100, 100);
+  eq('200x100 4:3 fit', ca(200, 100, 4, 3, 'fit'), 200, 150);
+  eq('200x100 4:3 fill', ca(200, 100, 4, 3, 'fill'), 133, 100);
+  eq('200x100 16:9 fit', ca(200, 100, 16, 9, 'fit'), 200, 113);
+  eq('200x100 16:9 fill', ca(200, 100, 16, 9, 'fill'), 178, 100);
+
+  // fit 必须完整容纳原图；fill 必须覆盖原图
+  const fit = ca(200, 100, 1, 1, 'fit');
+  check(fit.width >= 200 && fit.height >= 100, 'fit 不裁切原图');
+  const fill = ca(200, 100, 1, 1, 'fill');
+  check(fill.width <= 200 && fill.height <= 100, 'fill 不超过原图范围');
+}
+
+console.log(`Image convert test: ${failures === 0 ? 'PASS' : 'FAIL'} (failures=${failures})`);
 process.exit(failures ? 1 : 0);

@@ -24,7 +24,7 @@
       <span class="logo">🖼️</span>
       <div>
         <h1>图片转换</h1>
-        <p class="tagline">JPG / PNG / WebP / RAW 格式互转</p>
+        <p class="tagline">JPG / PNG / WebP / ICO / RAW 格式互转 · 可编辑</p>
       </div>
     </div>
     <div class="header-actions">
@@ -80,6 +80,7 @@
             <option value="jpeg">JPEG (.jpg)</option>
             <option value="png">PNG</option>
             <option value="webp">WebP</option>
+            <option value="ico">ICO 图标 (.ico)</option>
             <option value="raw">RAW（原始像素）</option>
           </select>
         </div>
@@ -93,6 +94,21 @@
             <option value="white" selected>白色</option>
             <option value="black">黑色</option>
           </select>
+        </div>
+      </div>
+
+      <div id="icoSetting" class="settings hidden">
+        <div class="setting" style="flex:1">
+          <label>ICO 图标尺寸（可多选，勾选多个将生成多分辨率图标）</label>
+          <div class="ico-sizes">
+            <label><input type="checkbox" class="ico-size" value="16"> 16</label>
+            <label><input type="checkbox" class="ico-size" value="24"> 24</label>
+            <label><input type="checkbox" class="ico-size" value="32" checked> 32</label>
+            <label><input type="checkbox" class="ico-size" value="48" checked> 48</label>
+            <label><input type="checkbox" class="ico-size" value="64"> 64</label>
+            <label><input type="checkbox" class="ico-size" value="128"> 128</label>
+            <label><input type="checkbox" class="ico-size" value="256" checked> 256</label>
+          </div>
         </div>
       </div>
 
@@ -114,6 +130,112 @@
         <div id="convertGrid" class="convert-grid"></div>
         <p id="convertEmpty" class="empty-hint">尚未添加文件</p>
       </div>
+
+      <!-- ============ 图片编辑面板 ============ -->
+      <div id="editorPanel" class="editor-panel hidden">
+        <div class="editor-head">
+          <span id="editorTitle">编辑图片</span>
+          <div class="editor-head-actions">
+            <button id="editorCancelBtn" class="ghost-btn">取消</button>
+            <button id="editorSaveBtn" class="primary-btn">保存修改</button>
+          </div>
+        </div>
+
+        <div class="editor-body">
+          <div class="editor-stage">
+            <div class="toolbar">
+              <div class="tool-group">
+                <button id="itToolBrush" class="tool-btn active" title="画笔：添加像素 (B)">🖌️ 画笔</button>
+                <button id="itToolEraser" class="tool-btn" title="橡皮：删除像素 (E)">🧽 橡皮</button>
+                <button id="itToolPicker" class="tool-btn" title="取色器 (I)">💧 取色</button>
+                <button id="itToolCrop" class="tool-btn" title="裁剪 (C)">✂️ 裁剪</button>
+              </div>
+              <div class="tool-group">
+                <label class="inline-label">颜色</label>
+                <input type="color" id="itColor" value="#ff0000">
+                <label class="inline-label">笔刷</label>
+                <select id="itBrushSize">
+                  <option value="1">1px</option>
+                  <option value="2">2px</option>
+                  <option value="4" selected>4px</option>
+                  <option value="8">8px</option>
+                  <option value="16">16px</option>
+                  <option value="32">32px</option>
+                </select>
+              </div>
+              <div class="tool-group">
+                <button id="itUndo" class="icon-btn" title="撤销">↶</button>
+                <button id="itRedo" class="icon-btn" title="重做">↷</button>
+                <button id="itReset" class="icon-btn" title="重置本图">⟲</button>
+              </div>
+              <div class="tool-group">
+                <button id="itZoomOut" class="icon-btn">−</button>
+                <button id="itZoomFit" class="icon-btn" title="适应窗口">适应</button>
+                <button id="itZoomIn" class="icon-btn">＋</button>
+                <span id="itZoomLabel" class="zoom-label">适应</span>
+              </div>
+            </div>
+
+            <div id="itCanvasWrap" class="canvas-wrap">
+              <canvas id="itCanvas"></canvas>
+            </div>
+
+            <div class="statusbar">
+              <span id="itStatus">将鼠标移到画布上查看像素</span>
+              <span id="itDims" class="frame-info"></span>
+            </div>
+          </div>
+
+          <aside class="editor-side">
+            <div class="side-card">
+              <h3>✂️ 裁剪</h3>
+              <p class="hint" id="itCropInfo">选择「裁剪」工具后，在画布上拖拽框选区域。</p>
+              <button id="itCropApply" class="primary-btn block">应用裁剪</button>
+              <button id="itCropSelectAll" class="ghost-btn block">全选</button>
+              <button id="itCropClear" class="ghost-btn block">清除选区</button>
+            </div>
+
+            <div class="side-card">
+              <h3>🖼️ 画幅比例</h3>
+              <label class="inline-label">比例</label>
+              <select id="itAspect">
+                <option value="1:1" selected>1 : 1（方形）</option>
+                <option value="4:3">4 : 3</option>
+                <option value="3:4">3 : 4</option>
+                <option value="3:2">3 : 2</option>
+                <option value="2:3">2 : 3</option>
+                <option value="16:9">16 : 9</option>
+                <option value="9:16">9 : 16</option>
+              </select>
+              <label class="inline-label">方式</label>
+              <select id="itAspectMode">
+                <option value="fit" selected>适应（留白，不裁切）</option>
+                <option value="fill">填充（裁切多余）</option>
+              </select>
+              <button id="itAspectApply" class="primary-btn block">应用到当前图</button>
+              <button id="itAspectAll" class="ghost-btn block">应用到全部图片</button>
+            </div>
+
+            <div class="side-card">
+              <h3>📐 画布尺寸</h3>
+              <div class="resize-row">
+                <input type="number" id="itWidth" min="1" max="8192" placeholder="宽">
+                <span class="x">×</span>
+                <input type="number" id="itHeight" min="1" max="8192" placeholder="高">
+              </div>
+              <label class="inline-label">对齐</label>
+              <select id="itAnchor">
+                <option value="tl">↖ 左上</option>
+                <option value="cc" selected>◎ 居中</option>
+                <option value="tr">↗ 右上</option>
+                <option value="bl">↙ 左下</option>
+                <option value="br">↘ 右下</option>
+              </select>
+              <button id="itResizeApply" class="primary-btn block">应用尺寸</button>
+            </div>
+          </aside>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -125,6 +247,8 @@
 
   <script src="js/utils.js"></script>
   <script src="js/zip.js"></script>
+  <script src="js/ico.js"></script>
+  <script src="js/imgtools.js"></script>
   <script src="js/theme.js"></script>
   <script src="js/convert.js"></script>
 </body>
