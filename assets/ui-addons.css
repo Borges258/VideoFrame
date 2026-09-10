@@ -1,7 +1,7 @@
 /*
  * VideoFrame - ui-addons.css
  * 新增的共享 UI 组件样式（顶部导航、主题选择器）。
- * 独立于 style.css，供 VideoFrame.html 与 convert.html 共用。
+ * 独立于 style.css，供 index.html 与 convert.html 共用。
  */
 .header-actions {
   display: flex;

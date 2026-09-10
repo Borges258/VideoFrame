@@ -8,7 +8,7 @@
 
 | 页面 | 用途 |
 | --- | --- |
-| `VideoFrame.html` | 把 MP4 视频切成 PNG 帧，编辑后导出为 ZIP 或 GIF |
+| `index.html` | 把 MP4 视频切成 PNG 帧，编辑后导出为 ZIP 或 GIF |
 | `convert.html` | 图片格式互转（JPG / PNG / WebP / ICO / RAW），转换前还能修图 |
 
 页面右上角可以随时在这两个功能之间切换。
@@ -17,6 +17,7 @@
 
 ## 目录
 
+- [在线使用](#在线使用)
 - [快速开始](#快速开始)
 - [功能一：视频帧处理](#功能一视频帧处理)
 - [功能二：图片转换与编辑](#功能二图片转换与编辑)
@@ -26,14 +27,33 @@
 
 ---
 
+## 在线使用
+
+本项目已托管在 GitHub Pages，打开网页即可使用，无需下载：
+
+**https://borges258.github.io/VideoFrame/**
+
+- 视频帧处理：<https://borges258.github.io/VideoFrame/>
+- 图片转换：<https://borges258.github.io/VideoFrame/convert.html>
+
+> 想自己部署一份？请参考 [DEPLOY.md](DEPLOY.md)。
+
+---
+
 ## 快速开始
 
+### 方式一：在线使用（推荐）
+
+直接打开上面的 GitHub Pages 网址。
+
+### 方式二：本地使用
+
 1. 下载并解压本项目到任意文件夹。
-2. 直接**双击** `VideoFrame.html` 或 `convert.html`，用浏览器打开即可。
+2. 直接**双击** `index.html` 或 `convert.html`，用浏览器打开即可。
 3. 建议使用 **Chrome / Edge**（近几年的版本都可以）。
 
-> 不想双击打开文件，也可以在项目文件夹里执行 `python -m http.server 8000`，
-> 然后访问 `http://localhost:8000/VideoFrame.html`。
+> 也可以在本项目文件夹里执行 `python -m http.server 8000`，
+> 然后访问 `http://localhost:8000/index.html`。
 
 ---
 
